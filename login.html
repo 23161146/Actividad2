@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login — utileria.js</title>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div class="login-envoltorio">
+  <div class="login-tarjeta">
+    <div class="marca">
+      <span class="marca__punto"></span>
+      <a href="index.html" class="marca__nombre">utileria.js</a>
+    </div>
+    <h1>Iniciar sesión</h1>
+    <p>Este login usa únicamente validarCorreo() y validarPassword() de la librería, sin backend real.</p>
+
+    <form class="form" id="formLogin" novalidate>
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" name="correo" placeholder="maria@correo.com" autocomplete="username" />
+        <span class="mensaje-error" id="errorCorreo"></span>
+      </div>
+
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" placeholder="Tu contraseña" autocomplete="current-password" />
+        <span class="campo__ayuda">Mayúscula, minúscula, número, carácter especial y 8+ caracteres.</span>
+        <span class="mensaje-error" id="errorPassword"></span>
+      </div>
+
+      <button class="boton boton--primario" type="submit">Entrar</button>
+    </form>
+
+    <div class="login-exito" id="loginExito"></div>
+
+    <p style="margin-top:22px; font-size:13px;">
+      <a href="index.html">&larr; Volver al formulario de ejemplo</a>
+    </p>
+  </div>
+</div>
+
+<script src="js/utileria.js"></script>
+<script>
+  const form = document.getElementById('formLogin');
+  const campoCorreo = document.getElementById('correo');
+  const campoPassword = document.getElementById('password');
+  const errorCorreo = document.getElementById('errorCorreo');
+  const errorPassword = document.getElementById('errorPassword');
+  const loginExito = document.getElementById('loginExito');
+
+  function marcarCampo(input, valido) {
+    input.classList.toggle('campo--valido', valido);
+    input.classList.toggle('campo--invalido', !valido);
+  }
+
+  campoCorreo.addEventListener('input', () => {
+    const ok = validarCorreo(campoCorreo.value);
+    marcarCampo(campoCorreo, campoCorreo.value === '' ? false : ok);
+    errorCorreo.textContent = campoCorreo.value && !ok ? 'Formato de correo no válido.' : '';
+  });
+
+  campoPassword.addEventListener('input', () => {
+    const ok = validarPassword(campoPassword.value);
+    marcarCampo(campoPassword, campoPassword.value === '' ? false : ok);
+    errorPassword.textContent = campoPassword.value && !ok
+      ? 'Necesita mayúscula, minúscula, número, carácter especial y 8+ caracteres.'
+      : '';
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    loginExito.classList.remove('visible');
+
+    const correoOk = validarCorreo(campoCorreo.value);
+    const passwordOk = validarPassword(campoPassword.value);
+
+    marcarCampo(campoCorreo, correoOk);
+    marcarCampo(campoPassword, passwordOk);
+    errorCorreo.textContent = correoOk ? '' : 'Formato de correo no válido.';
+    errorPassword.textContent = passwordOk ? '' : 'La contraseña no cumple los requisitos.';
+
+    console.log('Intento de login:', {
+      correo: campoCorreo.value,
+      correoValido: correoOk,
+      passwordValida: passwordOk,
+    });
+
+    if (correoOk && passwordOk) {
+      loginExito.textContent = 'Bienvenido/a, ' + campoCorreo.value + '. Login simulado correctamente.';
+      loginExito.classList.add('visible');
+    }
+  });
+</script>
+
+</body>
+</html>

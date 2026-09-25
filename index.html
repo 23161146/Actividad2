@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>utileria.js — validaciones para formularios sin frameworks</title>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<main class="contenedor" style="padding-top:48px;">
+
+  <section class="seccion" id="formulario">
+    <h2 class="seccion__titulo">Formulario de ejemplo</h2>
+    <p class="seccion__intro">
+      Usa las 8 funciones en tiempo real. Al enviarlo con todos los campos
+      válidos se abre la ventana modal con la edad calculada.
+    </p>
+
+    <form class="form" id="formRegistro" novalidate>
+
+      <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input type="text" id="nombre" name="nombre" placeholder="María José Hernández" />
+        <span class="campo__ayuda">Usa soloLetras() — solo letras y espacios.</span>
+        <span class="mensaje-error" id="errorNombre"></span>
+      </div>
+
+      <div class="campo">
+        <label for="correo">Correo electrónico</label>
+        <input type="email" id="correo" name="correo" placeholder="maria@correo.com" />
+        <span class="campo__ayuda">Usa validarCorreo().</span>
+        <span class="mensaje-error" id="errorCorreo"></span>
+      </div>
+
+      <div class="campo">
+        <label for="telefono">Teléfono (10 dígitos)</label>
+        <input type="tel" id="telefono" name="telefono" placeholder="9511234567" />
+        <span class="campo__ayuda">Usa validarLongitud(numero, 10) y formatoTelefono() al salir del campo.</span>
+        <span class="mensaje-error" id="errorTelefono"></span>
+      </div>
+
+      <div class="campo">
+        <label for="fecha">Fecha de nacimiento</label>
+        <div class="campo__fila">
+          <input type="date" id="fecha" name="fecha" />
+          <button class="boton boton--secundario" id="btnCalcularEdad" type="button">Calcular edad</button>
+        </div>
+        <span class="campo__ayuda">El botón abre el modal usando calcularEdad() y esMayorDeEdad().</span>
+        <span class="mensaje-error" id="errorFecha"></span>
+      </div>
+
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" name="password" placeholder="Mín. 8 caracteres" />
+        <span class="campo__ayuda">Usa validarPassword(): mayúscula, minúscula, número y carácter especial.</span>
+        <div class="fuerza">
+          <div class="fuerza__barra"><span id="fuerzaBarra"></span></div>
+          <span class="fuerza__etiqueta" id="fuerzaEtiqueta">calcularFuerzaPassword() → —</span>
+        </div>
+        <span class="mensaje-error" id="errorPassword"></span>
+      </div>
+
+      <button class="boton boton--primario" type="submit">Crear cuenta</button>
+    </form>
+
+    <p style="margin-top:14px; font-size:14px;">
+      <a href="login.html"> Login de prueba</a>.
+    </p>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="contenedor">
+    utileria.js — proyecto individual · código fuente en <a href="js/utileria.js">js/utileria.js</a>
+  </div>
+</footer>
+
+<!-- Modal: se reutiliza tanto para "calcular edad" como para el envío exitoso del formulario -->
+<div class="modal-fondo" id="modalFondo">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+    <button class="modal__cerrar" id="modalCerrar" aria-label="Cerrar">&times;</button>
+    <div id="modalContenido"></div>
+  </div>
+</div>
+
+<script src="js/utileria.js"></script>
+<script>
+  /* ---------- referencias ---------- */
+  const form = document.getElementById('formRegistro');
+
+  const campoNombre = document.getElementById('nombre');
+  const campoCorreo = document.getElementById('correo');
+  const campoTelefono = document.getElementById('telefono');
+  const campoFecha = document.getElementById('fecha');
+  const campoPassword = document.getElementById('password');
+
+  const errorNombre = document.getElementById('errorNombre');
+  const errorCorreo = document.getElementById('errorCorreo');
+  const errorTelefono = document.getElementById('errorTelefono');
+  const errorFecha = document.getElementById('errorFecha');
+  const errorPassword = document.getElementById('errorPassword');
+
+  const fuerzaBarra = document.getElementById('fuerzaBarra');
+  const fuerzaEtiqueta = document.getElementById('fuerzaEtiqueta');
+
+  const modalFondo = document.getElementById('modalFondo');
+  const modalContenido = document.getElementById('modalContenido');
+  const modalCerrar = document.getElementById('modalCerrar');
+
+  /* ---------- helpers de UI ---------- */
+  function marcarCampo(input, valido) {
+    input.classList.toggle('campo--valido', valido);
+    input.classList.toggle('campo--invalido', !valido);
+  }
+
+  function abrirModal(html) {
+    modalContenido.innerHTML = html;
+    modalFondo.classList.add('visible');
+  }
+
+  function cerrarModal() {
+    modalFondo.classList.remove('visible');
+  }
+
+  modalCerrar.addEventListener('click', cerrarModal);
+  modalFondo.addEventListener('click', (e) => {
+    if (e.target === modalFondo) cerrarModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') cerrarModal();
+  });
+
+  /* ---------- validación en vivo ---------- */
+  campoNombre.addEventListener('input', () => {
+    const ok = soloLetras(campoNombre.value);
+    marcarCampo(campoNombre, campoNombre.value === '' ? false : ok);
+    errorNombre.textContent = campoNombre.value && !ok ? 'Solo letras y espacios.' : '';
+  });
+
+  campoCorreo.addEventListener('input', () => {
+    const ok = validarCorreo(campoCorreo.value);
+    marcarCampo(campoCorreo, campoCorreo.value === '' ? false : ok);
+    errorCorreo.textContent = campoCorreo.value && !ok ? 'Formato de correo no válido.' : '';
+  });
+
+  campoTelefono.addEventListener('input', () => {
+    const ok = validarLongitud(campoTelefono.value, 10) && campoTelefono.value.replace(/\D/g, '').length === 10;
+    marcarCampo(campoTelefono, campoTelefono.value === '' ? false : ok);
+    errorTelefono.textContent = campoTelefono.value && !ok ? 'Debe tener 10 dígitos.' : '';
+  });
+
+  campoTelefono.addEventListener('blur', () => {
+    const formateado = formatoTelefono(campoTelefono.value);
+    if (formateado) campoTelefono.value = formateado;
+  });
+
+  campoPassword.addEventListener('input', () => {
+    const ok = validarPassword(campoPassword.value);
+    marcarCampo(campoPassword, campoPassword.value === '' ? false : ok);
+    errorPassword.textContent = campoPassword.value && !ok
+      ? 'Necesita mayúscula, minúscula, número, carácter especial y 8+ caracteres.'
+      : '';
+
+    const fuerza = calcularFuerzaPassword(campoPassword.value);
+    const niveles = { 'Muy débil': 10, 'Débil': 32, 'Media': 58, 'Fuerte': 80, 'Muy fuerte': 100 };
+    const colores = { 'Muy débil': 'var(--rojo)', 'Débil': 'var(--rojo)', 'Media': 'var(--ambar-oscuro)', 'Fuerte': 'var(--verde)', 'Muy fuerte': 'var(--verde)' };
+    fuerzaBarra.style.width = (campoPassword.value ? niveles[fuerza] : 0) + '%';
+    fuerzaBarra.style.background = colores[fuerza];
+    fuerzaEtiqueta.textContent = 'calcularFuerzaPassword() → ' + (campoPassword.value ? fuerza : '—');
+  });
+
+  /* ---------- botón "Calcular edad" → abre el modal ---------- */
+  document.getElementById('btnCalcularEdad').addEventListener('click', () => {
+    if (!campoFecha.value) {
+      errorFecha.textContent = 'Elige una fecha de nacimiento primero.';
+      return;
+    }
+    errorFecha.textContent = '';
+    const edad = calcularEdad(campoFecha.value);
+    const mayor = esMayorDeEdad(campoFecha.value);
+
+    abrirModal(`
+      <h3>calcularEdad()</h3>
+      <div class="modal__edad">${edad}</div>
+      <span class="modal__estado ${mayor ? 'modal__estado--ok' : 'modal__estado--no'}">
+        ${mayor ? 'esMayorDeEdad() → true' : 'esMayorDeEdad() → false'}
+      </span>
+      <p style="margin-top:10px;">Edad calculada a partir de la fecha de nacimiento ingresada en el formulario.</p>
+    `);
+  });
+
+  /* ---------- envío del formulario ---------- */
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const nombreOk = soloLetras(campoNombre.value);
+    const correoOk = validarCorreo(campoCorreo.value);
+    const telefonoOk = validarLongitud(campoTelefono.value, 10) && campoTelefono.value.replace(/\D/g, '').length === 10;
+    const fechaOk = campoFecha.value !== '' && !isNaN(calcularEdad(campoFecha.value));
+    const passwordOk = validarPassword(campoPassword.value);
+
+    marcarCampo(campoNombre, nombreOk);
+    marcarCampo(campoCorreo, correoOk);
+    marcarCampo(campoTelefono, telefonoOk);
+    marcarCampo(campoPassword, passwordOk);
+
+    errorNombre.textContent = nombreOk ? '' : 'Solo letras y espacios.';
+    errorCorreo.textContent = correoOk ? '' : 'Formato de correo no válido.';
+    errorTelefono.textContent = telefonoOk ? '' : 'Debe tener 10 dígitos.';
+    errorFecha.textContent = fechaOk ? '' : 'Elige una fecha de nacimiento válida.';
+    errorPassword.textContent = passwordOk ? '' : 'La contraseña no cumple los requisitos.';
+
+    if (!(nombreOk && correoOk && telefonoOk && fechaOk && passwordOk)) {
+      return;
+    }
+
+    const edad = calcularEdad(campoFecha.value);
+    const mayor = esMayorDeEdad(campoFecha.value);
+
+    abrirModal(`
+      <h3>Cuenta creada ✓</h3>
+      <p>${campoNombre.value}, tu formulario pasó las 5 validaciones de utileria.js.</p>
+      <div class="modal__edad">${edad}</div>
+      <span class="modal__estado ${mayor ? 'modal__estado--ok' : 'modal__estado--no'}">
+        ${mayor ? 'Mayor de edad' : 'Menor de edad'}
+      </span>
+    `);
+
+    console.log('Registro válido:', {
+      nombre: campoNombre.value,
+      correo: campoCorreo.value,
+      telefono: campoTelefono.value,
+      edad,
+      mayorDeEdad: mayor,
+      fuerzaPassword: calcularFuerzaPassword(campoPassword.value),
+    });
+  });
+</script>
+
+</body>
+</html>
