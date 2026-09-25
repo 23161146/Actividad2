@@ -1,8 +1,7 @@
 # utileria.js
 
-Librería de JavaScript puro (sin frameworks, sin componentes visuales) con
-**8 funciones de validación y utilidad** para formularios: correos,
-contraseñas, nombres, teléfonos, edades y fechas de nacimiento.
+
+**Nombre** : Santos Ríos Ángel Omar
 
 **Problema que resuelve:** cada vez que se construye un formulario desde
 cero, se repite la misma lógica de validación —¿el correo tiene formato
@@ -110,93 +109,26 @@ el usuario escribió espacios, guiones o paréntesis.
 
 ```js
 formatoTelefono("9511234567");    // "(951) 123-4567"
-formatoTelefono("951-123-45-67"); // "(951) 123-4567"
-formatoTelefono("12345");         // null
+formateoTelefono("951-123-45-67"); // "(951) 123-4567"
+formateoTelefono("12345");         // null
 ```
-
----
-
-## Integración en el proyecto
-
-| Archivo        | Qué usa de la librería                                                   |
-|-----------------|---------------------------------------------------------------------------|
-| `index.html`    | Las 8 funciones en un formulario real, con una ventana modal que muestra la edad calculada (`calcularEdad` + `esMayorDeEdad`). |
-| `login.html`    | `validarCorreo()` y `validarPassword()` en un formulario de inicio de sesión simulado. |
 
 ---
 
 ## Capturas de pantalla
 
-> Sustituye estos marcadores por tus propias capturas antes de entregar
-> (guárdalas en `img/` y actualiza la ruta).
->
-> 1. Corre `index.html`, abre la consola (F12) y haz clic en **"Correr
->    pruebas en consola"** — toma una captura de la tabla que imprime
->    `console.table()`.
-> 2. Llena el formulario y toma una captura del modal mostrando la edad
->    calculada.
-> 3. En `login.html`, toma una captura del mensaje de bienvenida tras un
->    login válido.
+
 
 ```markdown
-![Consola con resultados de las pruebas](img/consola.png)
-![Modal con la edad calculada](img/modal-edad.png)
-![Login exitoso](img/login-exito.png)
+![Consola con resultados de las pruebas](img/Captura%20de%20pantalla%202026-09-24%20212504.png)
+![Modal con la edad calculada](img/Captura%20de%20pantalla%202026-09-24%20212646.png)
+![Login exitoso](img/Captura%20de%20pantalla%202026-09-24%20213315.png)
 ```
 
 ---
 
-## Video demo (máx. 1 min)
+## Video demo 
 
-> Graba tu pantalla + tu voz mostrando la librería como si la estuvieras
-> vendiendo. Guion sugerido (60 segundos):
->
-> 1. **(0–10s) El problema:** "Cada formulario repite la misma lógica de
->    validación de correo, contraseña y edad. Así es como lo resolví."
-> 2. **(10–35s) La solución en acción:** abre `index.html`, escribe un
->    correo inválido y muestra el mensaje de error en vivo; escribe una
->    contraseña y muestra cómo sube la barra de fuerza; llena el
->    formulario completo y haz clic en "Crear cuenta" para abrir el modal
->    con la edad calculada.
-> 3. **(35–50s) El login:** ve a `login.html`, intenta con una contraseña
->    débil (se rechaza), luego con una válida (mensaje de bienvenida).
-> 4. **(50–60s) Cierre:** "Todo esto con un solo script, sin frameworks:
->    `utileria.js`." Muestra el repositorio en GitHub.
->
-> Sube el video a YouTube (no listado) o Google Drive y pega aquí el link:
->
-> **Video:** `<pega aquí el link>`
+> **Video:** `https://youtu.be/jW0cKfBbt38`
 
----
 
-## Estructura del repositorio
-
-```
-/utileria-js
-├── README.md
-├── index.html
-├── login.html
-├── css/
-│   └── styles.css
-├── js/
-│   └── utileria.js
-└── img/
-    └── (capturas usadas en este README)
-```
-
-## Cómo publicar en GitHub Pages
-
-1. Sube esta carpeta a un repositorio público en GitHub.
-2. En el repositorio: **Settings → Pages → Source** y selecciona la rama
-   `main` (o `master`) con carpeta `/root`.
-3. Guarda; GitHub te dará un link tipo
-   `https://<tu-usuario>.github.io/<tu-repo>/`.
-4. Verifica que `index.html`, el formulario, el modal y `login.html`
-   funcionen en ese link antes de entregarlo.
-5. Deja el link del repositorio y el link de GitHub Pages en un comentario
-   dentro de la clase, como se hizo en el ejercicio anterior.
-
-## Autor
-
-Proyecto individual — librería `utileria.js` para formularios, modal y
-login.
